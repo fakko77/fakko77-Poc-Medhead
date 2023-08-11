@@ -1,9 +1,5 @@
-import logo from '../assets/img-login.png';
+
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
-import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 import $ from "jquery";
 import React, { useState, useEffect } from 'react';
 import Banner from './Banner';

@@ -1,0 +1,17 @@
+.App {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 80vh;
+}
+.logo-img {
+    width: 35%;
+    box-shadow: 0px 0px 5px;
+}
+.login-container {
+    width: 25%;
+    font-weight: bold;
+    font-size:1.1rem;
+    padding-top:2%;
+}

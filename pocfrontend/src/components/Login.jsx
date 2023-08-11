@@ -1,23 +1,21 @@
-import logo from '../assets/img-login.png';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import {  useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import axios from "axios";
+import { act } from 'react-dom/test-utils';
 import Banner from './Banner';
 import Footer from './Footer';
 
+import logo from '../assets/img-login.png';
+import './Login.css';
 
-export default function Login(){
+const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-
-
-  async function login(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const rawResponse = await fetch('http://localhost:8081/app/login', {
@@ -26,90 +24,62 @@ export default function Login(){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: username, password: password})
+        body: JSON.stringify({ username, password })
       });
 
       const content = await rawResponse.json();
-      if(content.tokenType == "Bearer"){
-        navigate("/home");
-      }else{
-        alert('Login incorrect')
+      if (content.tokenType === 'Bearer') {
+        navigate('/home');
+      } else {
+        alert('Login incorrect');
       }
       console.log(content);
-    }
-
-     catch (err) {
+    } catch (err) {
       alert(err);
     }
-  
-  }
+  };
 
-  /*      await axios.post("http://localhost:8081/app/login", {
-        username: username,
-        password: password,
-        }).then((res) => 
-        {
-         console.log(res.data);
-         
-         if(res.data.tokenType == "Bearer")
-         { 
-            
-          console.log("oook");
-          localStorage.setItem("jwt", res.data.accessToken);
-          alert("Login is good");
-          navigate("/home");
-         } 
-          else 
-         { 
-            alert("Incorrect Email and Password not match");
-         }
-      }, fail => {
-       console.error(fail); 
-       alert("Incorrect Username and Password not match");// Error!
-});*/
+  return (
+    <>
+      <Banner />
+      <div className="App">
+        <img src={logo} className="logo-img" alt="img médical" />
+        <Container className="login-container">
+          <Form className="justify-content-md-center" onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>
+                <h3>Username</h3>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(event) => act(() => {setUsername(event.target.value)})}
+                data-testid="username-input"
+              />
+            </Form.Group>
 
-    return (
-      
-    <div>
-       <Banner/>
-     <div className="App"  style={{
-      fontfamily: "Montserrat",
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      height: '80vh',
-    }}>
-      <img src={logo} style={{ width: '35%', boxShadow: '0px 0px 5px',}} alt='img médical'></img>
-    
-      <Container style={{ width: '25%', fontWeight: 'bold', fontSize:'1.1rem', paddingTop:'2%' }}>
-      <Form className="justify-content-md-center" >
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label > <h3>Username</h3> </Form.Label>
-          <Form.Control type="text" placeholder="Enter username"  value={username}
-          onChange={(event) => {
-            setUsername(event.target.value);
-          }} />
-          <Form.Text className="text-muted">
-            
-          </Form.Text>
-        </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Label>
+                <h3>Password</h3>
+              </Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(event) =>   act(() => {setPassword(event.target.value)})}
+                data-testid="password-input"
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Connexion
+            </Button>
+          </Form>
+        </Container>
+      </div>
+      <Footer />
+    </>
+  );
+};
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label><h3>Password</h3></Form.Label>
-          <Form.Control type="password" placeholder="Password"   value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-            />
-        </Form.Group>
-        <Button variant="primary" type="submit" onClick={login} >
-          Connexion
-        </Button>
-      </Form>
-      </Container>
-
-    </div>
-    <Footer/>
-    </div>);
-}
+export default Login;

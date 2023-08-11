@@ -1,7 +1,5 @@
 import logo from '../assets/logo.png';
-import {  useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import axios from "axios";
+
 
 export default function Banner(){
 
