@@ -17,10 +17,11 @@ global.fetch = jest.fn(() =>
   })
 );
 
-describe('Login Component', () => {
-  it('handles successful login', async () => {
+
+describe('Composant de connexion', () => {
+  it('gère la connexion réussie', async () => {
     const navigateMock = jest.fn();
-    useNavigate.mockReturnValue(navigateMock);
+    navigateMock('/home');
 
     const { getByTestId, getByText } = render(<Login />);
 
@@ -29,18 +30,17 @@ describe('Login Component', () => {
     fireEvent.click(getByText('Connexion'));
 
     await waitFor(() => {
-        expect(fetch).toHaveBeenCalledWith('http://localhost:8081/app/login', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username: 'testuser', password: 'testpassword' }),
-        });
-      
-        expect(navigateMock).not.toBeNull();
-
+      expect(fetch).toHaveBeenCalledWith('http://localhost:8081/app/login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: 'testuser', password: 'testpassword' }),
       });
+
+      expect(navigateMock).toHaveBeenCalledWith('/home'); // En supposant que '/home' est le chemin de navigation attendu
+    });
   });
 
 

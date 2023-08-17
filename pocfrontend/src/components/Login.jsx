@@ -29,6 +29,8 @@ const Login = () => {
 
       const content = await rawResponse.json();
       if (content.tokenType === 'Bearer') {
+        console.log("content.accessToken");
+        localStorage.setItem("jwt",content.accessToken);
         navigate('/home');
       } else {
         alert('Login incorrect');
