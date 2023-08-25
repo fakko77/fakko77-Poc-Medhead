@@ -3,7 +3,7 @@
 		"_postman_id": "e0395a52-11b9-482f-b3ec-2c3a1874f1e3",
 		"name": "Authentification-service",
 		"description": "First collection to be launched\n\nThis collection tests the authentication micro-service",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "27980592"
 	},
 	"item": [
@@ -16,7 +16,7 @@
 						"exec": [
 							"//Set token \r",
 							"const response = pm.response.json();\r",
-							"pm.environment.set(\"jwt_token\",response.accessToken)\r",
+							"pm.environment.set(\"jwt_token\",response.accessToken);\r",
 							"\r",
 							"\r",
 							"// Test to check if the response status code is 200\r",
@@ -62,18 +62,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8081/app/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"login"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/login"
 			},
 			"response": []
 		},
@@ -127,18 +116,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:8081/app/adduser",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"adduser"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/adduser"
 			},
 			"response": []
 		},
@@ -228,13 +206,9 @@
 			"request": {
 				"auth": {
 					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYXNpY19tb3JnYW4iLCJpYXQiOjE2ODkyMjc5NzgsImV4cCI6MTY4OTMxNDM3OH0.xczgg_39_JR5HKTLdM90f7eONEAs0aHfSYAnw9vwFcA",
-							"type": "string"
-						}
-					]
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYXNpY19tb3JnYW4iLCJpYXQiOjE2ODkyMjc5NzgsImV4cCI6MTY4OTMxNDM3OH0.xczgg_39_JR5HKTLdM90f7eONEAs0aHfSYAnw9vwFcA"
+					}
 				},
 				"method": "GET",
 				"header": [
@@ -245,18 +219,7 @@
 						"disabled": true
 					}
 				],
-				"url": {
-					"raw": "http://localhost:8081/app/admin",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"admin"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/admin"
 			},
 			"response": []
 		},
@@ -356,18 +319,7 @@
 						"type": "default"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:8081/app/admin",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"admin"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/admin"
 			},
 			"response": []
 		},
@@ -379,76 +331,39 @@
 					"script": {
 						"exec": [
 							"\r",
-							"pm.test(\"Response status code is 401\", function () {\r",
-							"    pm.expect(pm.response.code).to.equal(401);\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
 							"});\r",
 							"\r",
 							"\r",
-							"pm.test(\"Response has the required fields\", function () {\r",
+							"pm.test(\"Response has required fields\", function () {\r",
 							"    const responseData = pm.response.json();\r",
 							"\r",
 							"    pm.expect(responseData).to.be.an('object');\r",
-							"    pm.expect(responseData.path).to.exist;\r",
-							"    pm.expect(responseData.error).to.exist;\r",
-							"    pm.expect(responseData.message).to.exist;\r",
-							"    pm.expect(responseData.status).to.exist;\r",
+							"    pm.expect(responseData.response).to.exist.and.to.be.a('string');\r",
 							"});\r",
 							"\r",
 							"\r",
-							"pm.test(\"Path is a non-empty string\", function () {\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify that the 'response' field is a non-empty string\", function () {\r",
 							"    const responseData = pm.response.json();\r",
 							"\r",
-							"    pm.expect(responseData.path).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"    pm.expect(responseData.response).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
 							"});\r",
 							"\r",
 							"\r",
-							"pm.test(\"Error is a non-empty string\", function () {\r",
+							"pm.test(\"The response field is not null or undefined\", function () {\r",
 							"    const responseData = pm.response.json();\r",
 							"\r",
-							"    pm.expect(responseData).to.be.an('object');\r",
-							"    pm.expect(responseData.error).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Error should not be empty\");\r",
+							"    pm.expect(responseData.response).to.exist.and.to.not.be.null;\r",
+							"    pm.expect(responseData.response).to.not.be.undefined;\r",
 							"});\r",
 							"\r",
-							"\r",
-							"pm.test(\"Message is a non-empty string\", function () {\r",
-							"    const responseData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(responseData.message).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
-							"});\r",
-							"\r",
-							"\r",
-							"\r",
-							"pm.test(\"Response status code is 401\", function () {\r",
-							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response has the required fields\", function () {\r",
-							"    const responseData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(responseData).to.be.an('object');\r",
-							"    pm.expect(responseData).to.have.property('path');\r",
-							"    pm.expect(responseData).to.have.property('error');\r",
-							"    pm.expect(responseData).to.have.property('message');\r",
-							"    pm.expect(responseData).to.have.property('status');\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Path is a non-empty string\", function () {\r",
-							"    const responseData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(responseData.path).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Error is a non-empty string\", function () {\r",
-							"    const responseData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(responseData.error).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Error should not be empty\");\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Message is a non-empty string\", function () {\r",
-							"    const responseData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
-							"});"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -467,18 +382,7 @@
 						"type": "default"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:8081/app/user",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"user"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/user"
 			},
 			"response": []
 		},
@@ -578,18 +482,7 @@
 						"disabled": true
 					}
 				],
-				"url": {
-					"raw": "http://localhost:8081/app/user",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"user"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/user"
 			},
 			"response": []
 		},
@@ -608,18 +501,7 @@
 						"disabled": true
 					}
 				],
-				"url": {
-					"raw": "http://localhost:8081/app/all",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"app",
-						"all"
-					]
-				}
+				"url": "http://127.0.0.1:8081/app/all"
 			},
 			"response": []
 		}
