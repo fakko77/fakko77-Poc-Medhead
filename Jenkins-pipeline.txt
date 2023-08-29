@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+     
+    environment {
+        // Définir des variables d'environnement
+        
+        VARIABLE_1 =  new Date().format("yyyy-MM-dd")
+        
+
+    }
+    
+    stages {
+        stage('Clone') {
+             steps {
+                checkout([$class: 'GitSCM', 
+                          branches: [[name: '*/main']],
+                          userRemoteConfigs: [[url: 'https://github.com/fakko77/fakko77-Poc-Medhead.git']]])
+            }
+        }
+        
+        stage('Build and Test appAuthentication') {
+            steps {
+                dir('appAuthentication') {
+                    bat 'mvn clean package'
+                    bat 'mvn install'
+                }
+            }
+        }
+        
+        stage('Build and Test appGestion') {
+            steps {
+                dir('appGestion') {
+                    bat 'mvn clean package'
+                    bat 'mvn install'
+                }
+            }
+        }
+        stage('Deploy appAuthentication') {
+            steps {
+                 dir('appAuthentication') {
+                    bat 'start /B java -jar target\\appAuthentication-0.0.1-SNAPSHOT.jar'
+                }
+            }
+        }
+        stage('Deploy appGestion') {
+            steps {
+                 dir('appGestion') {
+                    bat 'start /B java -jar target\\appGestion-0.0.1-SNAPSHOT.jar'
+                }
+            }
+        }
+                stage('Run Postman test') {
+            steps {
+                dir('Collection Postman') {
+                    // Download and install JMeter if needed
+                    bat 'npm install -g newman'
+                    bat 'npm i newman-reporter-html'
+                    bat 'C:\\Users\\Morgan\\AppData\\Roaming\\npm\\newman run   Application-Service.postman_collection.json -e Flux-Authentification.postman_environment.json '
+                    bat 'C:\\Users\\Morgan\\AppData\\Roaming\\npm\\newman run   Authentification-Service.postman_collection.json -e Flux-Authentification.postman_environment.json '
+
+
+                }
+            }
+        }
+        stage('Run JMeter Tests') {
+            steps {
+                dir('Jmeter') {
+                    // Download and install JMeter if needed
+                    bat 'powershell Invoke-WebRequest -Uri https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.4.1.zip -OutFile jmeter.zip'
+                    bat 'powershell Expand-Archive -Path jmeter.zip -DestinationPath .'
+                    
+                    // Run JMeter tests
+                    bat '.\\apache-jmeter-5.4.1\\bin\\jmeter.bat -n -t TestJmeter.jmx -l jmeter_test_results.jtl'
+                }
+            }
+        }
+        
+        stage('Production Tag') {
+            steps {
+                
+                bat "git tag prod-${env.VARIABLE_1}"
+                bat  "git push origin prod-${env.VARIABLE_1}"
+            }
+        }
+
+
+    }
+}
+
