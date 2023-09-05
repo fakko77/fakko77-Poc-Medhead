@@ -20,9 +20,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.Charset;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,34 +60,6 @@ public class ServiceControllerTest {
     public void getAllSpecialisationTestAccess() throws Exception {
         mockMvc.perform(get("/allSpecialisations"))
                 .andExpect(status().isOk());
-    }
-    @Test
-    @WithMockUser(roles = {"USER", "ADMIN"})
-    public void testHospitalAndAvailableLocationAuthorized() throws Exception {
-        String specialisationName = "someSpecialisation";
-
-        when(hospitalSpecialisationService.getAllInformationsBySpecialisation(specialisationName))
-                .thenReturn(new JSONArray()); // Replace with your expected result
-
-        mockMvc.perform(get("/allInfo/{specialisationName}", specialisationName))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testHospitalAndAvailableLocationUnauthorized() throws Exception {
-        String specialisationName = "someSpecialisation";
-
-        mockMvc.perform(get("/allInfo/{specialisationName}", specialisationName))
-                .andExpect(status().is(401));
-    }
-
-    @Test
-    @WithMockUser(roles = {"USER"})
-    public void hospitalAndAvailableLocation() throws Exception {
-        mockMvc.perform(get("/allInfo/Immunologie"))
-                .andExpect(status().isOk());
-
-
     }
 
     @Test
@@ -254,5 +229,22 @@ public class ServiceControllerTest {
         mockMvc.perform(get("/Specialisation/{name}", specialisationName))
                 .andExpect(status().is(401));
     }
+
+    @Test
+    void testGetLocation() throws Exception {
+
+        String address = "123 Main Street";
+        JSONObject expectedJsonObject = new JSONObject();
+        expectedJsonObject.put("latitude", "51.5074");
+        expectedJsonObject.put("longitude", "0.1278");
+
+        when(hospitalSpecialisationService.getCord(address)).thenReturn(expectedJsonObject);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/getlocation/{address}", address))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.latitude").value("51.5074"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.longitude").value("0.1278"));
+    }
+
 
 }

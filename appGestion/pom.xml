@@ -85,6 +85,11 @@
 			<artifactId>spring-security-web</artifactId>
 			<version>6.1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.14</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -98,7 +103,7 @@
 				<version> 0.8.10</version>
 				<configuration>
 					<excludes>
-						<exclude>**/AppServiceApplication*.class</exclude>
+						<exclude>**/AppGestionApplication*.class</exclude>
 						<exclude>**/jwt/*.class</exclude>
 						<exclude>**/model/*.class</exclude>
 					</excludes>

@@ -17,6 +17,13 @@
 
 
 }
+.adresse {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

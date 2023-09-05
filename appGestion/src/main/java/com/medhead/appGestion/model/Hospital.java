@@ -14,6 +14,8 @@ public class Hospital {
 
     private String name;
 
+    private String coordinates;
+
     @JsonIgnore
     @OneToMany(mappedBy = "hospital")
     private Set<HospitalSpecialisation> hospitalSpecialisations;

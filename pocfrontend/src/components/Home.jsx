@@ -8,8 +8,17 @@ import Footer from './Footer';
 
 export default function Home() {
   const jwt = localStorage.getItem('jwt');
+
   const [data, setData] = useState([]);
+  
   const [hospitalInfo, setHospitalInfo] = useState([]);
+
+
+  const [address, setAddress] = useState('');
+
+  const handleInputChange = (e) => {
+    setAddress(e.target.value);
+  };
 
 
   useEffect(() => {
@@ -29,17 +38,74 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const sortJSONArray = (jsonArray, columnName) => {
+    jsonArray.sort((a, b) => {
+        const value1 = a[columnName];
+        const value2 = b[columnName];
+        
+        // Assurez-vous que les valeurs sont comparables (par exemple, numériques)
+        if (value1 < value2) {
+            return -1;
+        }
+        if (value1 > value2) {
+            return 1;
+        }
+        return 0;
+    });
+};
+
   const getInfo = async (name) => {
+    const loc = localStorage.getItem('loc');
+      try {
+        const rawResponse = await fetch('http://localhost:8080/allInfo', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + jwt,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ coordinates: loc, specialisationName: name})
+        });
+  
+      const jsonData = await rawResponse.json();
+
+      sortJSONArray(jsonData, "distance");
+      setHospitalInfo(jsonData); // Assurez-vous d'avoir défini setHospitalInfo correctement.
+      console.log(jsonData);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
+
+  const handleSubmit = async (e) => { // Ajoutez "async" ici pour pouvoir utiliser "await"
+    e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/allInfo/' + name, {
+      const response = await fetch('http://localhost:8080/getlocation/' + address, {
         headers: { Authorization: 'Bearer ' + jwt }
       });
       const jsonData = await response.json();
-      setHospitalInfo(jsonData);
-      console.log(jsonData);
+
+      if (jsonData.error == 'Erreur lors de la récupération des coordonnées GPS.'){
+        alert("Erreur lors de la récupération des coordonnées GPS.");
+      }else{
+        console.log(jsonData);
+        var loc = jsonData["longitude"]+","+jsonData["latitude"];
+        console.log(loc);
+        localStorage.setItem("loc",loc);
+        $(".adresseShow").hide();
+        $(".blocApp").show();
+      }
+      
+
     } catch (err) {
       alert(err);
     }
+    // Vous pouvez traiter l'adresse ici, par exemple, l'envoyer à un backend ou l'enregistrer localement.
+    
+    console.log(address);
   };
 
   const handleBooking = async (index, id, action) => {
@@ -82,7 +148,21 @@ export default function Home() {
   return (
     <div>
       <Banner />
-      <div className="blocApp">
+      <div className='adresseShow'>
+      <form onSubmit={handleSubmit} className='adresse'>
+      <label>
+        Adresse:
+        <input
+          type="text"
+          value={address}
+          onChange={handleInputChange}
+          placeholder="Entrez votre adresse"
+        />
+      </label>
+      <button type="submit">Soumettre</button>
+    </form>
+      </div>
+      <div className="blocApp" style={{display:'none'}}>
         <Table striped bordered hover style={{ width: '20%' }}>
           <thead>
             <tr>
@@ -103,11 +183,13 @@ export default function Home() {
           </tbody>
         </Table>
         <div>
-          <Table striped bordered hover>
+            
+        <Table striped bordered hover>
             <thead>
               <tr>
                 <th>Nom</th>
                 <th>Nb lits</th>
+                <th>Distance</th>
               </tr>
             </thead>
             <tbody>
@@ -115,6 +197,7 @@ export default function Home() {
                 <tr key={item.id}>
                   <td>{item.Hospital}</td>
                   <td>{item.available}</td>
+                  <td>{item.distance}</td>
                   <td id={'reservation' + item.id}>
                     <Button
                       variant="success"
@@ -138,7 +221,8 @@ export default function Home() {
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </Table> 
+
         </div>
       </div>
       <Footer />
