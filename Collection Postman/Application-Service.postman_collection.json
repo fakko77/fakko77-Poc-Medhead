@@ -341,46 +341,40 @@
 					"script": {
 						"exec": [
 							"",
-							"pm.test(\"Response status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
+							"pm.test(\"Response status code is 415\", function () {",
+							"    pm.response.to.have.status(415);",
 							"});",
 							"",
 							"",
-							"pm.test(\"Response body is an array\", function () {",
-							"    pm.expect(pm.response.json()).to.be.an('array');",
-							"});",
-							"",
-							"",
-							"pm.test(\"Each object in the response array has the required fields\", function () {",
+							"pm.test(\"Validate the timestamp field\", function () {",
 							"    const responseData = pm.response.json();",
 							"",
-							"    pm.expect(responseData).to.be.an('array');",
-							"",
-							"    responseData.forEach(function (item) {",
-							"        pm.expect(item).to.have.property('available');",
-							"        pm.expect(item).to.have.property('Hospital');",
-							"        pm.expect(item).to.have.property('id');",
-							"    });",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.timestamp).to.exist.and.to.be.a('string');",
 							"});",
 							"",
 							"",
-							"pm.test(\"The available field is a non-negative integer\", function () {",
+							"pm.test(\"Validate the status field\", function () {",
 							"    const responseData = pm.response.json();",
 							"",
-							"    pm.expect(responseData).to.be.an('array');",
-							"    responseData.forEach(function (data) {",
-							"        pm.expect(data.available).to.be.a('number').and.to.be.at.least(0, \"Value should be a non-negative integer\");",
-							"    });",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.status).to.exist.and.to.be.a('number');",
 							"});",
 							"",
 							"",
-							"pm.test(\"Id field is a positive integer\", function () {",
+							"pm.test(\"Validate the error field\", function () {",
 							"    const responseData = pm.response.json();",
 							"",
-							"    pm.expect(responseData).to.be.an('array');",
-							"    responseData.forEach(function (data) {",
-							"        pm.expect(data.id).to.be.a('number').and.to.be.above(0);",
-							"    });",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.error).to.exist.and.to.be.a('string');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the path field\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.path).to.exist;",
 							"});",
 							"",
 							""
@@ -393,7 +387,7 @@
 				"auth": {
 					"type": "noauth"
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Authorization",
@@ -401,7 +395,11 @@
 						"type": "default"
 					}
 				],
-				"url": "http://127.0.0.1:8080/allInfo/Cardiologie"
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"coordinates\":\"-0.0999714,51.5265463\",\r\n \"specialisationName\":\"Cardiologie\"\r\n\r\n}"
+				},
+				"url": "http://127.0.0.1:8080/allInfo"
 			},
 			"response": []
 		}
