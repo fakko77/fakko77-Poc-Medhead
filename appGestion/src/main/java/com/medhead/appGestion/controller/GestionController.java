@@ -91,10 +91,7 @@ public class GestionController {
         return ResponseEntity.ok(hospitalSpecialisationService.getAllInformationsBySpecialisation(spe, cord));
     }
 
-    @PostMapping("/test")
-    public void doPostMapping(){
-        hospitalSpecialisationService.addHospitalSpecialisation();
-    }
+
 
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -132,13 +129,6 @@ public class GestionController {
         }else{
             return ResponseEntity.ok(specialisation);
         }
-    }
-
-    @PostMapping("/addSpecialisationHospital")
-    public void addSpecialisationHospital() {
-
-       hospitalSpecialisationService.addHospitalSpecialisation();
-
     }
 
 }

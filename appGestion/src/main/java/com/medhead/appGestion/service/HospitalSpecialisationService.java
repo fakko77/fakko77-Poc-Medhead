@@ -93,23 +93,7 @@ public class HospitalSpecialisationService {
         return arr;
 
     }
-    @Transactional
-    public void  addHospitalSpecialisation(){
-        JSONArray arr = new JSONArray();
-        JSONObject jo = new JSONObject();
 
-        Optional<Hospital> hospital = hospitalRepository.findById(2L);
-        Optional<Specialisation> specialisation = specialisationRepository.findById(104L);
-
-
-        HospitalSpecialisation special = new HospitalSpecialisation();
-        special.setHospital(hospital.get());
-        special.setSpecialisation(specialisation.get());
-        hospitalSpecialisationRepository.save(special);
-        jo.put("message","good ajout!");
-        arr.add(jo);
-
-    }
     public JSONObject getCord(String address) {
         try {
             String encodedAddress = URLEncoder.encode(address, "UTF-8");
